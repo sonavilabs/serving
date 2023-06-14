@@ -164,8 +164,13 @@ func validateVolume(ctx context.Context, volume corev1.Volume) *apis.FieldError 
 		specified = append(specified, "persistentVolumeClaim")
 	}
 
+	if vs.CSI != nil {
+		specified = append(specified, "csi")
+		errs = errs.Also(validateCSIFields(vs.CSI).ViaField("csi"))
+	}
+
 	if len(specified) == 0 {
-		fieldPaths := []string{"secret", "configMap", "projected"}
+		fieldPaths := []string{"secret", "configMap", "projected", "csi"}
 		cfg := config.FromContextOrDefaults(ctx)
 		if cfg.Features.PodSpecVolumesEmptyDir == config.Enabled {
 			fieldPaths = append(fieldPaths, "emptyDir")
@@ -286,6 +291,15 @@ func validateEmptyDirFields(dir *corev1.EmptyDirVolumeSource) *apis.FieldError {
 			errs = errs.Also(apis.ErrInvalidValue(dir.SizeLimit, "sizeLimit"))
 		}
 	}
+	return errs
+}
+
+func validateCSIFields(csi *corev1.CSIVolumeSource) *apis.FieldError {
+	var errs *apis.FieldError
+	if csi.Driver == "" {
+		errs = errs.Also(apis.ErrMissingField("driver"))
+	}
+
 	return errs
 }
 

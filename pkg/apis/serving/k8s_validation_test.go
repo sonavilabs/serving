@@ -2431,7 +2431,7 @@ func TestVolumeValidation(t *testing.T) {
 		v: corev1.Volume{
 			Name: "foo",
 		},
-		want: apis.ErrMissingOneOf("secret", "configMap", "projected", "emptyDir"),
+		want: apis.ErrMissingOneOf("secret", "configMap", "projected", "emptyDir", "csi"),
 	}, {
 		name: "secret volume",
 		v: corev1.Volume{
@@ -2442,6 +2442,25 @@ func TestVolumeValidation(t *testing.T) {
 				},
 			},
 		},
+	}, {
+		name: "csi volume",
+		v: corev1.Volume{
+			Name: "foo",
+			VolumeSource: corev1.VolumeSource{
+				CSI: &corev1.CSIVolumeSource{
+					Driver: "test",
+				},
+			},
+		},
+	}, {
+		name: "invalid csi volume",
+		v: corev1.Volume{
+			Name: "foo",
+			VolumeSource: corev1.VolumeSource{
+				CSI: &corev1.CSIVolumeSource{},
+			},
+		},
+		want: apis.ErrMissingField("csi.driver"),
 	}, {
 		name: "configMap volume",
 		v: corev1.Volume{
@@ -2510,7 +2529,7 @@ func TestVolumeValidation(t *testing.T) {
 		v: corev1.Volume{
 			Name: "foo",
 		},
-		want: apis.ErrMissingOneOf("secret", "configMap", "projected", "emptyDir"),
+		want: apis.ErrMissingOneOf("secret", "configMap", "projected", "emptyDir", "csi"),
 	}, {
 		name: "multiple volume source",
 		v: corev1.Volume{
