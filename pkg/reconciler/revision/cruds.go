@@ -93,7 +93,7 @@ func (c *Reconciler) checkAndUpdateDeployment(ctx context.Context, rev *v1.Revis
 
 	d, err := c.kubeclient.AppsV1().Deployments(deployment.Namespace).Update(ctx, desiredDeployment, metav1.UpdateOptions{})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to apply update to deployment, %w", err)
 	}
 
 	// If what comes back from the update (with defaults applied by the API server) is the same
