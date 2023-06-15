@@ -55,11 +55,13 @@ func TestVolumeSourceMask(t *testing.T) {
 	want := &corev1.VolumeSource{
 		Secret:    &corev1.SecretVolumeSource{},
 		ConfigMap: &corev1.ConfigMapVolumeSource{},
+		CSI:       &corev1.CSIVolumeSource{},
 	}
 	in := &corev1.VolumeSource{
 		Secret:    &corev1.SecretVolumeSource{},
 		ConfigMap: &corev1.ConfigMapVolumeSource{},
 		NFS:       &corev1.NFSVolumeSource{},
+		CSI:       &corev1.CSIVolumeSource{},
 	}
 
 	got := VolumeSourceMask(context.Background(), in)
